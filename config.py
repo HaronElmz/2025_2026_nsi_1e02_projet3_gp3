@@ -1,0 +1,9 @@
+WIDTH = 1000
+HEIGHT = 650
+FPS = 60
+TITLE = "L'ombre du passé"
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GRAY = (60, 60, 60)
+LIGHT_GRAY = (100, 100, 100)
