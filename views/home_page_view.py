@@ -27,8 +27,6 @@ def draw_button(screen, rect, text, font):
 
     pygame.draw.rect(screen, color, rect, border_radius=4)
     pygame.draw.rect(screen, (130, 18, 24), rect, 2, border_radius=4)
-    pygame.draw.line(screen, (18, 3, 5), (rect.left + 8, rect.top + 8), (rect.right - 8, rect.bottom - 8), 1)
-    pygame.draw.line(screen, (18, 3, 5), (rect.left + 8, rect.bottom - 8), (rect.right - 8, rect.top + 8), 1)
 
     shadow_surface = font.render(text, True, (15, 0, 0))
     shadow_rect = shadow_surface.get_rect(center=(rect.centerx + 2, rect.centery + 2))
