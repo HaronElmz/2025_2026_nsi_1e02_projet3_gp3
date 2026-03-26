@@ -8,7 +8,6 @@ INPUT_FONT_SIZE = 38
 
 
 def get_horror_font(size, bold=False, italic=False):
-    # Cherche une police décorative si elle existe sur la machine.
     candidates = (
         "chiller",
         "oldenglishtextmt",
@@ -23,7 +22,6 @@ def get_horror_font(size, bold=False, italic=False):
 
 
 def username_view(screen, events, state):
-    # Fond d'écran + cache pour éviter de recharger l'image à chaque frame.
     if "username_bg" not in state:
         try:
             bg_path = (
@@ -44,11 +42,9 @@ def username_view(screen, events, state):
     title_font = get_horror_font(TITLE_FONT_SIZE, bold=True, italic=True)
     input_font = get_horror_font(INPUT_FONT_SIZE, bold=True)
 
-    # Centrage écran.
     input_box = pygame.Rect(0, 0, 420, 60)
     input_box.center = (WIDTH // 2, HEIGHT // 2 + 60)
 
-    # état local (créé une seule fois)
     if "input_active" not in state:
         state["input_active"] = False
         state["cursor_timer"] = 0
@@ -64,11 +60,10 @@ def username_view(screen, events, state):
     title_surface = title_font.render(title_text, True, (205, 32, 38))
     screen.blit(title_surface, title_surface.get_rect(center=title_center))
 
-    # gestion événements
     for event in events:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # active si on clique dedans
+
             state["input_active"] = input_box.collidepoint(event.pos)
 
         if event.type == pygame.KEYDOWN and state["input_active"]:
@@ -84,7 +79,6 @@ def username_view(screen, events, state):
                 if len(state["username"]) < 15:
                     state["username"] += event.unicode
 
-    # Style de la barre (horreur)
     typed_text = state["username"]
 
     border_color = (140, 85, 65) if state["input_active"] else (110, 65, 50)
@@ -99,7 +93,6 @@ def username_view(screen, events, state):
     pygame.draw.rect(screen, (55, 28, 26), inner_box, border_radius=6)
     pygame.draw.rect(screen, (70, 35, 33), inner_box, 2, border_radius=6)
 
-    # Texte (avec rognage à gauche si trop long)
     padding_x = 18
     available_width = input_box.width - (padding_x + 18)
 
@@ -112,7 +105,6 @@ def username_view(screen, events, state):
     text_y = input_box.y + (input_box.height - name_surface.get_height()) // 2
     screen.blit(name_surface, (text_x, text_y))
 
-    # curseur clignotant
     if state["input_active"]:
         state["cursor_timer"] += 1
 
@@ -121,7 +113,6 @@ def username_view(screen, events, state):
             state["cursor_timer"] = 0
 
         if state["cursor_visible"]:
-            # Curseur à la fin du texte tapé (ou après padding si vide)
             typed_display = typed_text
             while input_font.size(typed_display)[0] > available_width and typed_display:
                 typed_display = typed_display[1:]
