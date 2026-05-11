@@ -76,7 +76,7 @@ def username_view(screen, events, state):
                 state["username"] = state["username"][:-1]
 
             else:
-                if len(state["username"]) < 15:
+                if event.unicode and not event.unicode.isspace() and len(state["username"]) < 15:
                     state["username"] += event.unicode
 
     typed_text = state["username"]

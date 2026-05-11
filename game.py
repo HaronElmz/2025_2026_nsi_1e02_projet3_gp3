@@ -8,7 +8,7 @@ from views.username_view import username_view
 from views.play_game_view import play_game_view
 from views.settings_view import settings_view
 
-
+#LLM: set the windows dark title bar
 def _set_windows_dark_title_bar():
     if sys.platform != "win32":
         return
@@ -29,7 +29,11 @@ def run_game():
     clock = pygame.time.Clock()
 
     state = {
-        "username": ""
+        "username": "",
+        "settings": {
+            "music_volume": 70,
+            "sfx_volume": 80,
+        },
     }
 
     views = {
