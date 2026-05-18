@@ -70,6 +70,7 @@ def username_view(screen, events, state):
 
             if event.key == pygame.K_RETURN:
                 if state["username"] != "":
+                    state.pop("game_state", None)
                     return "play"
 
             elif event.key == pygame.K_BACKSPACE:

@@ -1,0 +1,315 @@
+{
+  "start": "reveil",
+  "variables": {
+    "has_key": false,
+    "has_lantern": false,
+    "has_journal_page": false,
+    "fear": 0,
+    "trust_shadow": 0,
+    "knows_ritual": false
+  },
+  "monsters": {
+    "ombre_rampeuse": {
+      "name": "L'Ombre rampante",
+      "image": "ombre_rampante.png",
+      "description": "Une masse d'encre vivante qui imite à peine une silhouette humaine."
+    },
+    "gardien_scelle": {
+      "name": "Le Gardien scellé",
+      "image": "character_2.png",
+      "description": "Un colosse aux yeux cousus, attaché par des chaînes de lumière pâle."
+    },
+    "murmure": {
+      "name": "Le Murmure",
+      "image": "le-murmure.png",
+      "description": "Une voix sans corps qui connaît ton prénom et tes secrets."
+    }
+  },
+  "scenes": {
+    "reveil": {
+      "speaker": "narrateur",
+      "text": "Tu ouvres les yeux dans un couloir d'école abandonnée. Ton carnet est serré contre ta poitrine ; la dernière page est couverte d'un symbole que tu n'as pas dessiné. Dehors, la pluie martèle les vitres brisées.",
+      "show_player": true,
+      "choices": [
+        { "text": "Descendre vers la cour", "next": "cour" },
+        { "text": "Remonter vers le grenier", "next": "grenier", "effects": { "fear": 1 } }
+      ]
+    },
+    "cour": {
+      "speaker": "narrateur",
+      "text": "La cour est noyée sous la pluie. Une lanterne éteinte pend au-dessus de l'entrée du sous-sol. Une silhouette bouge dans la bibliothèque, au fond.",
+      "show_player": true,
+      "choices": [
+        { "text": "Allumer la lanterne accrochée", "next": "lanterne", "effects": { "has_lantern": true } },
+        { "text": "Foncer vers la bibliothèque sans lumière", "next": "bibliotheque_sombre", "effects": { "fear": 1 } },
+        { "text": "Ouvrir la trappe du sous-sol à mains nues", "next": "mort_sous_sol" }
+      ]
+    },
+    "lanterne": {
+      "speaker": "narrateur",
+      "text": "La flamme vacille mais tient. Tu vois des traces de pas qui mènent à la bibliothèque — et d'autres qui s'en éloignent, vers la sortie sud.",
+      "show_player": true,
+      "choices": [
+        { "text": "Suivre les pas vers la bibliothèque", "next": "bibliotheque" },
+        { "text": "Suivre les pas vers la sortie sud", "next": "sortie_sud" }
+      ]
+    },
+    "bibliotheque_sombre": {
+      "speaker": "narrateur",
+      "text": "Dans le noir, quelque chose effleure ton épaule. Une voix chuchote ton nom.",
+      "monster": "murmure",
+      "show_player": true,
+      "choices": [
+        { "text": "Répondre à la voix", "next": "murmure_reponse", "effects": { "trust_shadow": 1, "fear": 1 } },
+        { "text": "Courir en avant sans regarder", "next": "mort_tenebres" },
+        { "text": "Reculer vers la cour", "next": "cour", "effects": { "fear": 1 } }
+      ]
+    },
+    "bibliotheque": {
+      "speaker": "narrateur",
+      "text": "Des rayonnages renversés, des livres pourris. Sur le bureau du concierge, une clé rouillée et un extrait de journal parlent d'un « rituel de brûlure » pour briser un sceau.",
+      "show_player": true,
+      "choices": [
+        { "text": "Prendre la clé et lire l'extrait", "next": "journal", "effects": { "has_key": true, "knows_ritual": true } },
+        { "text": "Ne prendre que la clé", "next": "sans_journal", "effects": { "has_key": true } },
+        { "text": "Lire l'extrait sans toucher à la clé", "next": "rituel_seul", "effects": { "knows_ritual": true } }
+      ]
+    },
+    "journal": {
+      "speaker": "narrateur",
+      "text": "Tu glisses une page arrachée dans ton carnet. Le symbole de la couverture pulse une fois, comme un cœur.",
+      "show_player": true,
+      "choices": [
+        { "text": "Retourner à la cour", "next": "cour_apres_journal" },
+        { "text": "Explorer l'aile est", "next": "aile_est" }
+      ],
+      "effects": { "has_journal_page": true }
+    },
+    "sans_journal": {
+      "speaker": "narrateur",
+      "text": "La clé est froide. Tu entends un grattement derrière le mur — comme des ongles sur la pierre.",
+      "monster": "ombre_rampeuse",
+      "show_player": true,
+      "choices": [
+        { "text": "Ouvrir le placard du mur", "next": "mort_placard" },
+        { "text": "Quitter la bibliothèque discrètement", "next": "cour_apres_journal" }
+      ]
+    },
+    "rituel_seul": {
+      "speaker": "narrateur",
+      "text": "Tu mémorises les mots du rituel, mais sans clé ni page du journal, le sceau restera intact.",
+      "show_player": true,
+      "choices": [
+        { "text": "Retourner à la cour", "next": "cour" }
+      ]
+    },
+    "cour_apres_journal": {
+      "speaker": "narrateur",
+      "text": "La pluie a redoublé. La trappe du sous-sol semble vibrer. La fenêtre du grenier s'illumine d'une lueur verte.",
+      "show_player": true,
+      "choices": [
+        { "text": "Descendre au sous-sol avec la clé", "next": "sous_sol", "conditions": { "has_key": true } },
+        { "text": "Monter au grenier", "next": "grenier" },
+        { "text": "Tenter la sortie sud", "next": "sortie_sud" },
+        { "text": "Descendre au sous-sol sans clé", "next": "mort_sous_sol" }
+      ]
+    },
+    "aile_est": {
+      "speaker": "narrateur",
+      "text": "Un couloir étroit mène à une salle scellée par des chaînes lumineuses. Derrière elles, un géant respire lentement.",
+      "monster": "gardien_scelle",
+      "show_player": true,
+      "choices": [
+        { "text": "Lui parler calmement", "next": "gardien_parole", "conditions": { "has_journal_page": true } },
+        { "text": "Tenter de briser les chaînes", "next": "mort_gardien" },
+        { "text": "Partir avant qu'il t'ait remarqué", "next": "cour_apres_journal" }
+      ]
+    },
+    "gardien_parole": {
+      "speaker": "Le Gardien scellé",
+      "text": "« Tu as apporté la page. Brûle ton carnet au sous-sol, ou la sortie sud ne s'ouvrira jamais pour toi. »",
+      "monster": "gardien_scelle",
+      "show_player": true,
+      "choices": [
+        { "text": "Accepter et descendre au sous-sol", "next": "sous_sol", "conditions": { "has_key": true } },
+        { "text": "Refuser et fuir vers la sortie sud", "next": "sortie_sud", "effects": { "fear": 2 } }
+      ]
+    },
+    "grenier": {
+      "speaker": "narrateur",
+      "text": "Des toiles d'araignée grosses comme des draps. Au centre, un miroir fendu reflète une version de toi qui ne cligne pas des yeux.",
+      "show_player": true,
+      "choices": [
+        { "text": "Se regarder longtemps dans le miroir", "next": "mort_miroir" },
+        { "text": "Briser le miroir avec ton carnet", "next": "grenier_brise", "effects": { "fear": 1 } },
+        { "text": "Redescendre sans toucher au miroir", "next": "cour" }
+      ]
+    },
+    "grenier_brise": {
+      "speaker": "narrateur",
+      "text": "Le verre explose en silence. Pendant une seconde, tu vois l'Ombre rampante fuir par la fenêtre.",
+      "monster": "ombre_rampeuse",
+      "show_player": true,
+      "choices": [
+        { "text": "La poursuivre", "next": "mort_poursuite" },
+        { "text": "Descendre prudemment", "next": "cour_apres_journal" }
+      ]
+    },
+    "sous_sol": {
+      "speaker": "narrateur",
+      "text": "Des salles inondées, des pupitres pourris. Au centre, un cercle de cire noire. Ton carnet vibre dans tes mains.",
+      "show_player": true,
+      "choices": [
+        { "text": "Brûler le carnet dans le cercle (rituel)", "next": "rituel_feux", "conditions": { "knows_ritual": true, "has_journal_page": true } },
+        { "text": "Brûler le carnet sans connaître le rituel", "next": "mort_rituel_rate" },
+        { "text": "Graver le symbole sur le sol avec la clé", "next": "mort_symbole" },
+        { "text": "Remonter avant que l'eau monte", "next": "cour_apres_journal" }
+      ]
+    },
+    "rituel_feux": {
+      "speaker": "narrateur",
+      "text": "Les flammes dévorent les pages une à une. Le Murmure hurle, puis se tait. Le sceau se fissure ; une brise froide monte les escaliers.",
+      "show_player": true,
+      "choices": [
+        { "text": "Remonter vers la sortie sud", "next": "win_rituel" }
+      ]
+    },
+    "sortie_sud": {
+      "speaker": "narrateur",
+      "text": "Une double porte blindée barre la sortie. Une serrure attend la clé rouillée. Derrière toi, des pas mouillés s'approchent.",
+      "monster": "ombre_rampeuse",
+      "show_player": true,
+      "choices": [
+        { "text": "Utiliser la clé et ouvrir", "next": "win_evasion", "conditions": { "has_key": true } },
+        { "text": "Forcer la porte sans clé", "next": "mort_porte" },
+        { "text": "Se retourner et affronter l'Ombre", "next": "affrontement", "conditions": { "has_lantern": true } },
+        { "text": "Se retourner sans lanterne", "next": "mort_ombre" }
+      ]
+    },
+    "affrontement": {
+      "speaker": "narrateur",
+      "text": "La lumière de la lanterne déchire l'Ombre. Elle s'effondre en gouttes d'encre qui murmurent ton nom.",
+      "monster": "ombre_rampeuse",
+      "show_player": true,
+      "choices": [
+        { "text": "Lui offrir une page du journal en échange de la paix", "next": "win_alliance", "conditions": { "has_journal_page": true, "trust_shadow": 1 } },
+        { "text": "Fuir vers la porte avec la clé", "next": "win_evasion", "conditions": { "has_key": true } },
+        { "text": "Éteindre la lanterne par terreur", "next": "mort_ombre" }
+      ]
+    },
+    "murmure_reponse": {
+      "speaker": "Le Murmure",
+      "text": "« Tu n'aurais jamais dû venir ici. Mais si tu me fais confiance, je te montrerai la sortie sans brûler ce qui te lie à ton passé. »",
+      "monster": "murmure",
+      "show_player": true,
+      "choices": [
+        { "text": "Suivre la voix dans le noir", "next": "passage_secret", "effects": { "trust_shadow": 2 } },
+        { "text": "Refuser et chercher la lumière", "next": "bibliotheque", "conditions": { "has_lantern": false } },
+        { "text": "Allumer ta lanterne si tu l'as", "next": "bibliotheque", "conditions": { "has_lantern": true } }
+      ]
+    },
+    "passage_secret": {
+      "speaker": "narrateur",
+      "text": "Un couloir que tu n'avais jamais vu s'ouvre dans le mur. Au bout, la pluie et la route réelle.",
+      "monster": "murmure",
+      "show_player": true,
+      "choices": [
+        { "text": "Sortir et laisser l'école derrière toi", "next": "win_pacte", "conditions": { "trust_shadow": 2 } },
+        { "text": "Hésiter — le Murmure te tire en arrière", "next": "mort_folie", "conditions": { "trust_shadow": 1 } },
+        { "text": "Revenir sur tes pas", "next": "cour" }
+      ]
+    },
+    "mort_sous_sol": {
+      "type": "death",
+      "title": "Noyé dans l'obscurité",
+      "text": "La trappe se referme sur toi. L'eau glacée monte trop vite. Ton carnet se dilue, et avec lui, ta dernière chance.",
+      "show_player": true
+    },
+    "mort_tenebres": {
+      "type": "death",
+      "title": "Perdu dans les ténèbres",
+      "text": "Tu cours sans voir. Un escalier absent te fait basculer dans le vide. Le Murmure rit jusqu'à ce que tout devienne silence.",
+      "monster": "murmure"
+    },
+    "mort_placard": {
+      "type": "death",
+      "title": "Dévoré par l'Ombre",
+      "text": "Le placard s'ouvre sur un gouffre d'encre. L'Ombre rampante t'engloutit avant que tu puisses crier.",
+      "monster": "ombre_rampeuse"
+    },
+    "mort_gardien": {
+      "type": "death",
+      "title": "Écrasé par le Gardien",
+      "text": "Les chaînes se brisent. Le Gardien scellé te plante au sol comme un clou dans du bois pourri.",
+      "monster": "gardien_scelle"
+    },
+    "mort_miroir": {
+      "type": "death",
+      "title": "Piégé dans le reflet",
+      "text": "Ton reflet te tire par la main. Tu restes coincé dans le miroir pendant que ton corps s'effondre, vide, dans le grenier.",
+      "show_player": true
+    },
+    "mort_poursuite": {
+      "type": "death",
+      "title": "Rattrapé",
+      "text": "L'Ombre est plus rapide que toi dans l'escalier. Elle recouvre ta bouche, tes yeux, ton souvenir du dehors.",
+      "monster": "ombre_rampeuse"
+    },
+    "mort_porte": {
+      "type": "death",
+      "title": "Porte maudite",
+      "text": "La porte s'ouvre sur un vide qui te aspire. Tu tombes dans un puits sans fond, encore et encore.",
+      "show_player": true
+    },
+    "mort_ombre": {
+      "type": "death",
+      "title": "Emporté par l'Ombre",
+      "text": "Sans lumière, tu ne vois pas l'attaque. L'Ombre rampante efface ta silhouette sur le sol mouillé.",
+      "monster": "ombre_rampeuse"
+    },
+    "mort_rituel_rate": {
+      "type": "death",
+      "title": "Rituel inachevé",
+      "text": "Les flammes s'éteignent. Le cercle se referme sur toi et te brûle de l'intérieur, jusqu'à ce qu'il ne reste que cendre.",
+      "show_player": true
+    },
+    "mort_symbole": {
+      "type": "death",
+      "title": "Symbole interdit",
+      "text": "Le symbole s'active. Des racines noires percent ta poitrine et te clouent au sol du sous-sol pour toujours.",
+      "show_player": true
+    },
+    "mort_folie": {
+      "type": "death",
+      "title": "Folie",
+      "text": "Tu hésites une seconde de trop. Le Murmure entre dans ton crâne. Tu oublies pourquoi tu voulais partir — et tu restes.",
+      "monster": "murmure"
+    },
+    "win_evasion": {
+      "type": "win",
+      "title": "Évasion",
+      "text": "La clé tourne. La pluie te frappe le visage — une pluie vraie, froide, vivante. Tu cours sur la route sans te retourner. L'école s'éteint derrière toi comme une lampe qu'on souffle.",
+      "show_player": true
+    },
+    "win_rituel": {
+      "type": "win",
+      "title": "Le sceau brisé",
+      "text": "Tu franchis la porte sud au moment où l'école s'effondre sur elle-même. Tu n'as plus de carnet, mais tu as la vérité : ton passé n'était qu'une page qu'il fallait brûler.",
+      "show_player": true
+    },
+    "win_alliance": {
+      "type": "win",
+      "title": "Alliance avec l'Ombre",
+      "text": "L'Ombre absorbe la page et devient presque humaine. Elle t'ouvre la porte. « Va, dit-elle. Je garderai ce lieu pour que plus personne n'y soit perdu. »",
+      "monster": "ombre_rampeuse",
+      "show_player": true
+    },
+    "win_pacte": {
+      "type": "win",
+      "title": "Le pacte du Murmure",
+      "text": "Tu sors vivant, mais chaque nuit de pluie tu entends encore la voix. Tu lui as laissé un morceau de toi — en échange, tu respires dehors.",
+      "monster": "murmure",
+      "show_player": true
+    }
+  }
+}
