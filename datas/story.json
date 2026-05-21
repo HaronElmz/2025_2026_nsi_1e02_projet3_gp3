@@ -11,7 +11,7 @@
   "monsters": {
     "ombre_rampeuse": {
       "name": "L'Ombre rampante",
-      "image": "ombre_rampante.png",
+      "image": "ombre-rampante.png",
       "description": "Une masse d'encre vivante qui imite à peine une silhouette humaine."
     },
     "gardien_scelle": {

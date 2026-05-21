@@ -8,63 +8,89 @@ from views.username_view import username_view
 from views.play_game_view import play_game_view
 from views.settings_view import settings_view
 
-#LLM: set the windows dark title bar
-def _set_windows_dark_title_bar():
-    if sys.platform != "win32":
-        return
-    hwnd = pygame.display.get_wm_info().get("window")
-    if not hwnd:
-        return
-    value = ctypes.c_int(1)
-    ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, 20, ctypes.byref(value), ctypes.sizeof(value))
-
 
 def run_game():
-    pygame.init()
-    pygame.font.init()
+    def set_windows_dark_title_bar():
+        if sys.platform != "win32":
+            return
+        hwnd = pygame.display.get_wm_info().get("window")
+        if not hwnd:
+            return
+        value = ctypes.c_int(1)
+        ctypes.windll.dwmapi.DwmSetWindowAttribute(
+            hwnd, 20, ctypes.byref(value), ctypes.sizeof(value)
+        )
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption(TITLE)
-    _set_windows_dark_title_bar()
-    clock = pygame.time.Clock()
+    def init_pygame():
+        pygame.init()
+        pygame.font.init()
 
-    state = {
-        "username": "",
-        "settings": {
-            "music_volume": 70,
-            "sfx_volume": 80,
-        },
-    }
+    def create_screen():
+        screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption(TITLE)
+        set_windows_dark_title_bar()
+        return screen
 
-    views = {
-        "home": home_page_view,
-        "username": username_view,
-        "play": play_game_view,
-        "settings": settings_view,
-    }
+    def create_initial_state():
+        return {
+            "username": "",
+            "settings": {
+                "music_volume": 70,
+                "sfx_volume": 80,
+            },
+        }
 
-    current_view = "home"
-    running = True
+    def create_views():
+        return {
+            "home": home_page_view,
+            "username": username_view,
+            "play": play_game_view,
+            "settings": settings_view,
+        }
 
-    while running:
-        events = pygame.event.get()
-
+    def user_wants_to_quit(events):
         for event in events:
             if event.type == pygame.QUIT:
+                return True
+        return False
+
+    def handle_unknown_view(view_name, views):
+        if view_name in views:
+            return False
+        print(f"Erreur : vue inconnue '{view_name}'")
+        return True
+
+    def run_main_loop(screen, clock, views, state):
+        current_view = "home"
+        running = True
+
+        while running:
+            events = pygame.event.get()
+
+            if user_wants_to_quit(events):
                 running = False
 
-        if current_view not in views:
-            print(f"Erreur : vue inconnue '{current_view}'")
-            running = False
-            continue
+            if handle_unknown_view(current_view, views):
+                running = False
+                continue
 
-        next_view = views[current_view](screen, events, state)
+            next_view = views[current_view](screen, events, state)
 
-        if next_view is not None:
-            current_view = next_view
+            if next_view is not None:
+                current_view = next_view
 
-        pygame.display.flip()
-        clock.tick(FPS)
+            pygame.display.flip()
+            clock.tick(FPS)
 
-    pygame.quit()
-    sys.exit()
+    def cleanup_and_exit():
+        pygame.quit()
+        sys.exit()
+
+    init_pygame()
+    screen = create_screen()
+    clock = pygame.time.Clock()
+    state = create_initial_state()
+    views = create_views()
+
+    run_main_loop(screen, clock, views, state)
+    cleanup_and_exit()

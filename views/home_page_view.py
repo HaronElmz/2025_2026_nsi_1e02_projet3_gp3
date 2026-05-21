@@ -38,32 +38,50 @@ def draw_button(screen, rect, text, font):
 
 
 def home_page_view(screen, events, state):
-    if "home_bg" not in state:
+    def load_home_background():
+        if "home_bg" in state:
+            return
         bg_path = Path(__file__).resolve().parent.parent / "assets" / "main_bg.png"
         bg_image = pygame.image.load(str(bg_path)).convert()
         state["home_bg"] = pygame.transform.smoothscale(bg_image, (WIDTH, HEIGHT))
 
-    screen.blit(state["home_bg"], (0, 0))
+    def draw_background():
+        screen.blit(state["home_bg"], (0, 0))
+
+    def draw_game_title(title_font):
+        title_text = "L'ombre du passé"
+        title_shadow = title_font.render(title_text, True, (20, 0, 0))
+        screen.blit(title_shadow, title_shadow.get_rect(center=(WIDTH // 2 + 3, 120 + 3)))
+        title_surface = title_font.render(title_text, True, (175, 20, 28))
+        screen.blit(title_surface, title_surface.get_rect(center=(WIDTH // 2, 120)))
+
+    def create_menu_buttons():
+        play_button = pygame.Rect(WIDTH // 2 - 150, 240, 300, 70)
+        settings_button = pygame.Rect(WIDTH // 2 - 150, 340, 300, 70)
+        return play_button, settings_button
+
+    def draw_menu_buttons(play_button, settings_button, button_font):
+        draw_button(screen, play_button, "Jouer", button_font)
+        draw_button(screen, settings_button, "Paramètres", button_font)
+
+    def get_clicked_view(play_button, settings_button):
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if play_button.collidepoint(event.pos):
+                    return "username"
+                if settings_button.collidepoint(event.pos):
+                    return "settings"
+        return None
+
+    load_home_background()
+    draw_background()
 
     title_font = get_horror_font(TITLE_FONT_SIZE, bold=True, italic=True)
     button_font = get_horror_font(BUTTON_FONT_SIZE, bold=True)
 
-    title_shadow = title_font.render("L'ombre du passé", True, (20, 0, 0))
-    screen.blit(title_shadow, title_shadow.get_rect(center=(WIDTH // 2 + 3, 120 + 3)))
-    title_surface = title_font.render("L'ombre du passé", True, (175, 20, 28))
-    screen.blit(title_surface, title_surface.get_rect(center=(WIDTH // 2, 120)))
+    draw_game_title(title_font)
 
-    play_button = pygame.Rect(WIDTH // 2 - 150, 240, 300, 70)
-    settings_button = pygame.Rect(WIDTH // 2 - 150, 340, 300, 70)
+    play_button, settings_button = create_menu_buttons()
+    draw_menu_buttons(play_button, settings_button, button_font)
 
-    draw_button(screen, play_button, "Jouer", button_font)
-    draw_button(screen, settings_button, "Paramètres", button_font)
-
-    for event in events:
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if play_button.collidepoint(event.pos):
-                return "username"
-            if settings_button.collidepoint(event.pos):
-                return "settings"
-
-    return None
+    return get_clicked_view(play_button, settings_button)

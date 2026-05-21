@@ -57,31 +57,43 @@ def new_game_state(story_data):
 
 
 def infer_pose_from_choice(choice):
-    pose = choice.get("player_pose")
-    if pose in PLAYER_POSES:
-        return pose
-    text = choice.get("text", "").lower()
-    for word in TENSE_CHOICE_WORDS:
-        if word in text:
-            return "tense"
-    for word in CALM_CHOICE_WORDS:
-        if word in text:
-            return "calm"
-    return None
+    def pose_from_choice_field():
+        pose = choice.get("player_pose")
+        if pose in PLAYER_POSES:
+            return pose
+        return None
+
+    def pose_from_choice_text():
+        text = choice.get("text", "").lower()
+        for word in TENSE_CHOICE_WORDS:
+            if word in text:
+                return "tense"
+        for word in CALM_CHOICE_WORDS:
+            if word in text:
+                return "calm"
+        return None
+
+    return pose_from_choice_field() or pose_from_choice_text()
 
 
 def infer_pose_from_scene(scene):
-    pose = scene.get("player_pose")
-    if pose in PLAYER_POSES:
-        return pose
-    if scene.get("monster"):
-        return "tense"
-    st = scene.get("type", "story")
-    if st == "death":
-        return "tense"
-    if st == "win":
-        return "calm"
-    return None
+    def pose_from_scene_field():
+        pose = scene.get("player_pose")
+        if pose in PLAYER_POSES:
+            return pose
+        return None
+
+    def pose_from_scene_context():
+        if scene.get("monster"):
+            return "tense"
+        scene_type_value = scene.get("type", "story")
+        if scene_type_value == "death":
+            return "tense"
+        if scene_type_value == "win":
+            return "calm"
+        return None
+
+    return pose_from_scene_field() or pose_from_scene_context()
 
 
 def apply_choice_pose(choice, game_state):
@@ -106,43 +118,50 @@ def get_player_pose(game_state, scene):
     return game_state.get("player_pose") or infer_pose_from_scene(scene) or "calm"
 
 
-def _conditions_met(conditions, variables):
-    if not conditions:
-        return True
-    for key, expected in conditions.items():
-        if variables.get(key) != expected:
-            return False
-    return True
-
-
-def _apply_effects(effects, variables):
-    if not effects:
-        return
-    for key, value in effects.items():
-        if isinstance(value, bool) or not isinstance(value, int):
-            variables[key] = value
-        else:
-            variables[key] = variables.get(key, 0) + value
-
-
 def get_scene(story_data, scene_id):
     return story_data["scenes"].get(scene_id)
 
 
 def get_available_choices(scene, variables):
+    def conditions_are_met(conditions):
+        if not conditions:
+            return True
+        for key, expected in conditions.items():
+            if variables.get(key) != expected:
+                return False
+        return True
+
     choices = scene.get("choices", [])
     return [
         choice
         for choice in choices
-        if _conditions_met(choice.get("conditions"), variables)
+        if conditions_are_met(choice.get("conditions"))
     ]
 
 
 def apply_scene_entry_effects(scene, variables):
-    _apply_effects(scene.get("effects"), variables)
+    def apply_effects(effects):
+        if not effects:
+            return
+        for key, value in effects.items():
+            if isinstance(value, bool) or not isinstance(value, int):
+                variables[key] = value
+            else:
+                variables[key] = variables.get(key, 0) + value
+
+    apply_effects(scene.get("effects"))
 
 
 def choose(story_data, game_state, choice_index):
+    def apply_effects(effects):
+        if not effects:
+            return
+        for key, value in effects.items():
+            if isinstance(value, bool) or not isinstance(value, int):
+                game_state["variables"][key] = value
+            else:
+                game_state["variables"][key] = game_state["variables"].get(key, 0) + value
+
     scene = get_scene(story_data, game_state["scene_id"])
     if scene is None:
         return False
@@ -152,7 +171,7 @@ def choose(story_data, game_state, choice_index):
         return False
 
     choice = available[choice_index]
-    _apply_effects(choice.get("effects"), game_state["variables"])
+    apply_effects(choice.get("effects"))
     apply_choice_pose(choice, game_state)
 
     next_id = choice["next"]
